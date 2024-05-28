@@ -1,39 +1,19 @@
-**English** | [中文](https://p3terx.com/archives/build-openwrt-with-github-actions.html)
+**中文** | [参考](https://p3terx.com/archives/build-openwrt-with-github-actions.html)
 
-# Actions-OpenWrt
+# 说明
 
-[![LICENSE](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square&label=LICENSE)](https://github.com/P3TERX/Actions-OpenWrt/blob/master/LICENSE)
-![GitHub Stars](https://img.shields.io/github/stars/P3TERX/Actions-OpenWrt.svg?style=flat-square&label=Stars&logo=github)
-![GitHub Forks](https://img.shields.io/github/forks/P3TERX/Actions-OpenWrt.svg?style=flat-square&label=Forks&logo=github)
+适用于Xiaomi Mi Router 3 Pro
 
-A template for building OpenWrt with GitHub Actions
-
-## Usage
-
-- Click the [Use this template](https://github.com/P3TERX/Actions-OpenWrt/generate) button to create a new repository.
-- Generate `.config` files using [Lean's OpenWrt](https://github.com/coolsnowwolf/lede) source code. ( You can change it through environment variables in the workflow file. )
-- Push `.config` file to the GitHub repository.
-- Select `Build OpenWrt` on the Actions page.
-- Click the `Run workflow` button.
-- When the build is complete, click the `Artifacts` button in the upper right corner of the Actions page to download the binaries.
-
-## Tips
-
-- It may take a long time to create a `.config` file and build the OpenWrt firmware. Thus, before create repository to build your own firmware, you may check out if others have already built it which meet your needs by simply [search `Actions-Openwrt` in GitHub](https://github.com/search?q=Actions-openwrt).
-- Add some meta info of your built firmware (such as firmware architecture and installed packages) to your repository introduction, this will save others' time.
-
-## Credits
-
-- [Microsoft Azure](https://azure.microsoft.com)
-- [GitHub Actions](https://github.com/features/actions)
-- [OpenWrt](https://github.com/openwrt/openwrt)
-- [coolsnowwolf/lede](https://github.com/coolsnowwolf/lede)
-- [Mikubill/transfer](https://github.com/Mikubill/transfer)
-- [softprops/action-gh-release](https://github.com/softprops/action-gh-release)
-- [Mattraks/delete-workflow-runs](https://github.com/Mattraks/delete-workflow-runs)
-- [dev-drprasad/delete-older-releases](https://github.com/dev-drprasad/delete-older-releases)
-- [peter-evans/repository-dispatch](https://github.com/peter-evans/repository-dispatch)
-
-## License
-
-[MIT](https://github.com/P3TERX/Actions-OpenWrt/blob/main/LICENSE) © [**P3TERX**](https://p3terx.com)
+默认IP： 192.168.31.1
+用户名： root
+密码：空
+内置包：
+		base-files busybox ca-bundle dropbear firewall4 fstools kmod-crypto-hw-eip93 kmod-gpio-button-hotplug kmod-leds-gpio kmod-mt7615-firmware kmod-nft-offload kmod-usb-ledtrig-usbport kmod-usb3 libc libgcc libustream-mbedtls logd mtd netifd nftables odhcp6c odhcpd-ipv6only opkg ppp ppp-mod-pppoe procd procd-seccomp procd-ujail uboot-envtools uci uclient-fetch urandom-seed urngd wpad-basic-mbedtls
+		block-mount mount-utils blockd ntfs-3g-utils kmod-fs-ext4 kmod-fs-msdos kmod-fs-nfs kmod-fs-ntfs kmod-usb-storage kmod-usb2 kmod-usb-core e2fsprogs lsblk fdisk kmod-usb-ohci kmod-usb-storage-extras kmod-usb-xhci-hcd kmod-usb-xhci-mtk kmod-fs-exfat kmod-usb-ehci luci-i18n-base-zh-cn curl
+		!gcc !make python3-pip 
+		coreutils coreutils-base64 coreutils-nohup ip-full libuci-lua lua luci-compat luci-lib-jsonc resolveip xray-core v2ray-core v2ray-extra v2ray-geoip v2ray-geosite luci-lua-runtime kmod-nft-socket kmod-nft-tproxy kmod-nft-nat
+		bash ca-certificates ipset libcap libcap-bin ruby ruby-yaml kmod-tun kmod-inet-diag unzip luci luci-base
+		dnsmasq-full
+		samba4-admin samba4-client samba4-libs samba4-server samba4-utils luci-app-samba4 luci-i18n-samba4-zh-cn
+		syncthing
+		adguardhome
