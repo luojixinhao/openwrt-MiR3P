@@ -17,7 +17,7 @@
 #echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
 #echo 'src-git passwall https://github.com/xiaorouji/openwrt-passwall' >>feeds.conf.default
 
-echo 'src-git app-passwall2 https://github.com/xiaorouji/openwrt-passwall2' >>feeds.conf.default
+# echo 'src-git app-passwall2 https://github.com/xiaorouji/openwrt-passwall2' >>feeds.conf.default
 echo 'src-git app-adguardhome https://github.com/rufengsuixing/luci-app-adguardhome' >>feeds.conf.default
 echo 'src-git app-mosdns https://github.com/sbwml/luci-app-mosdns' >>feeds.conf.default
 
