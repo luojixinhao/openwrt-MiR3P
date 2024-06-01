@@ -10,6 +10,8 @@
 # See /LICENSE for more information.
 #
 # 参考：https://blog.x-wrt.com/docs/build/
+# 参考：https://docs.github.com/zh/actions/using-workflows/workflow-syntax-for-github-actions
+#
 
 name: X-wrt Builder
 
@@ -37,7 +39,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 600
+    
     steps:
     - name: Checkout
       uses: actions/checkout@main
