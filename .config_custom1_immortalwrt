@@ -3,6 +3,9 @@
 # ImmortalWrt Configuration
 #
 # .config_custom1_immortalwrt
+# 编译失败：
+# 	ERROR: package/feeds/packages/shadowsocks-libev failed to build.
+#	 WARNING: Makefile 'package/feeds/telephony/freeswitch/Makefile' has a dependency on 'libpcre', which does not exist
 #
 CONFIG_MODULES=y
 CONFIG_HAVE_DOT_CONFIG=y
