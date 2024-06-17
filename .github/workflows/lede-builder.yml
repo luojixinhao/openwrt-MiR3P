@@ -10,14 +10,14 @@
 # See /LICENSE for more information.
 #
 
-name: OpenWrt Builder
+name: 编译LEDE
 
 on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
       ssh:
-        description: 'SSH connection to Actions'
+        description: '启用SSH连接'
         required: false
         default: 'false'
 
@@ -36,46 +36,48 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+	timeout-minutes: 800
 
     steps:
     - name: Checkout
       uses: actions/checkout@main
 
-    - name: Initialization environment
+    - name: 初始化环境
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
         sudo docker image prune --all --force
-        sudo -E apt-get -qq update
-        sudo -E apt-get -qq install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext clang g++ file python3-distutils gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
-        sudo -E apt-get -qq autoremove --purge
-        sudo -E apt-get -qq clean
+
+        sudo apt update -y
+        sudo apt full-upgrade -y
+        sudo apt install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache clang cmake cpio curl device-tree-compiler ecj fastjar flex gawk gettext gcc-multilib g++-multilib git git-core gnutls-dev gperf haveged help2man intltool lib32gcc-s1 libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5 libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lld llvm lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pip python3-ply python3-docutils python3-pyelftools python3-dev python3-setuptools qemu-utils re2c rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev java-propose-classpath g++ file python3-distutils
+
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
-    - name: Clone source code
+    - name: 克隆源代码
       working-directory: /workdir
       run: |
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-    - name: Load custom feeds
+    - name: 加载自定义源
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
         chmod +x $DIY_P1_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
 
-    - name: Update feeds
+    - name: 更新源
       run: cd openwrt && ./scripts/feeds update -a
 
-    - name: Install feeds
+    - name: 安装源
       run: cd openwrt && ./scripts/feeds install -a
 
-    - name: Load custom configuration
+    - name: 加载自定义配置
       env:
         check: 0
       run: |
@@ -84,15 +86,37 @@ jobs:
         chmod +x $DIY_P2_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
-        
-    - name: SSH connection to Actions
+
+        egrep '^# setIP:192\.168\.[0-9]{1,3}\.[0-9]{1,3}' .config | sed 's/# setIP://' > CUSTOM_setIP
+        [ -s CUSTOM_setIP ] && echo "CUSTOM_setIP=$(cat CUSTOM_setIP)" >> $GITHUB_ENV
+        [ -s CUSTOM_setIP ] && echo "$(cat CUSTOM_setIP)" | sed 's/.[0-9]\{1,3\}$/.255/' > CUSTOM_setMASK
+        egrep '^# setCONFIG:' .config | sed 's/# setCONFIG://' > CUSTOM_setCONFIG
+        [ -s CUSTOM_setCONFIG ] && echo "CUSTOM_setCONFIG=$(cat CUSTOM_setCONFIG)" >> $GITHUB_ENV
+
+        echo "当前配置: $(cat CUSTOM_setCONFIG)"
+        echo "自定义IP: $(cat CUSTOM_setIP)"
+        grep -n 'lan) ipad=${ipaddr:-"192.168.[0-9]\{1,3\}.[0-9]\{1,3\}"} ;;' package/base-files/files/bin/config_generate
+        grep -n 'default "192.168.[0-9]\{1,3\}.' package/base-files/image-config.in
+        grep -n '/lib/preinit/00_preinit.conf' package/base-files/Makefile | egrep "PREINIT_IP|PREINIT_BROADCAST"
+
+        [ -s CUSTOM_setIP ] && sed -i 's/lan) ipad=${ipaddr:-"192.168.[0-9]\{1,3\}.[0-9]\{1,3\}"} ;;/lan) ipad=${ipaddr:-"'"$(cat CUSTOM_setIP)"'"} ;;/g' package/base-files/files/bin/config_generate
+        [ -s CUSTOM_setIP ] && sed -i 's/default "192.168.[0-9]\{1,3\}.1/default "'"$(cat CUSTOM_setIP)"'/g' package/base-files/image-config.in
+        [ -s CUSTOM_setIP ] && sed -i 's/default "192.168.[0-9]\{1,3\}.255/default "'"$(cat CUSTOM_setMASK)"'/g' package/base-files/image-config.in
+        [ -s CUSTOM_setIP ] && sed -i "s#_IP),\"192.168.[0-9]\{1,3\}.1\")' >>\$(1)/lib/preinit/00_preinit.conf#_IP),\"$(cat CUSTOM_setIP)\")' >>\$(1)/lib/preinit/00_preinit.conf#g" package/base-files/Makefile
+        [ -s CUSTOM_setIP ] && sed -i "s#_BROADCAST),\"192.168.[0-9]\{1,3\}.255\")' >>\$(1)/lib/preinit/00_preinit.conf#_BROADCAST),\"$(cat CUSTOM_setMASK)\")' >>\$(1)/lib/preinit/00_preinit.conf#g" package/base-files/Makefile
+
+        grep -n 'lan) ipad=${ipaddr:-"192.168.[0-9]\{1,3\}.[0-9]\{1,3\}"} ;;' package/base-files/files/bin/config_generate
+        grep -n 'default "192.168.[0-9]\{1,3\}.' package/base-files/image-config.in
+        grep -n '/lib/preinit/00_preinit.conf' package/base-files/Makefile | egrep "PREINIT_IP|PREINIT_BROADCAST"
+
+    - name: SSH连接
       uses: P3TERX/ssh2actions@v1.0.0
       if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
       env:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
-    - name: Download package
+    - name: 下载软件包
       id: package
       run: |
         cd openwrt
@@ -101,29 +125,30 @@ jobs:
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
-    - name: Compile the firmware
+    - name: 编译固件
+      timeout-minutes: 600
       id: compile
       run: |
         cd openwrt
         echo -e "$(nproc) thread compile"
-        make -j$(nproc) || make -j1 || make -j1 V=s
+        make -j$(nproc) || make -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
-    - name: Check space usage
+    - name: 检查使用空间
       if: (!cancelled())
       run: df -hT
 
-    - name: Upload bin directory
+    - name: 上传到bin目录
       uses: actions/upload-artifact@main
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
         name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: openwrt/bin
 
-    - name: Organize files
+    - name: 组织文件
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
@@ -132,11 +157,11 @@ jobs:
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
 
-    - name: Upload firmware directory
+    - name: 上传到固件目录
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}_SNAPSHOT()_${{ env.CUSTOM_setCONFIG }}_${{ env.CUSTOM_setIP }}_root(password)_root()
         path: ${{ env.FIRMWARE }}
 
     - name: Generate release tag

@@ -13,14 +13,14 @@
 # 参考：https://docs.github.com/zh/actions/using-workflows/workflow-syntax-for-github-actions
 #
 
-name: X-wrt Builder
+name: 编译X-Wrt
 
 on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
       ssh:
-        description: 'SSH connection to Actions'
+        description: '启用SSH连接'
         required: false
         default: 'false'
 
@@ -39,13 +39,13 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 600
+    timeout-minutes: 800
     
     steps:
     - name: Checkout
       uses: actions/checkout@main
 
-    - name: Initialization environment
+    - name: 初始化环境
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
@@ -60,7 +60,7 @@ jobs:
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
-    - name: Clone source code
+    - name: 克隆源代码
       working-directory: /workdir
       run: |
         df -hT $PWD
@@ -69,20 +69,22 @@ jobs:
         cd x-wrt
         git checkout -f $(git describe --tags $(git rev-list --tags --max-count=1))
 
-    - name: Load custom feeds
+		echo "CUSTOM_useTAG=$(git rev-list --tags --max-count=1)" >> $GITHUB_ENV
+
+    - name: 加载自定义源
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF x-wrt/feeds.conf.default
         chmod +x $DIY_P1_SH
         cd x-wrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
 
-    - name: Update feeds
+    - name: 更新源
       run: cd x-wrt && ./scripts/feeds update -a
 
-    - name: Install feeds
+    - name: 安装源
       run: cd x-wrt && ./scripts/feeds install -a
 
-    - name: Load custom configuration
+    - name: 加载自定义配置
       env:
         check: 0
       run: |
@@ -91,15 +93,37 @@ jobs:
         chmod +x $DIY_P2_SH
         cd x-wrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
-        
-    - name: SSH connection to Actions
+
+        egrep '^# setIP:192\.168\.[0-9]{1,3}\.[0-9]{1,3}' .config | sed 's/# setIP://' > CUSTOM_setIP
+        [ -s CUSTOM_setIP ] && echo "CUSTOM_setIP=$(cat CUSTOM_setIP)" >> $GITHUB_ENV
+        [ -s CUSTOM_setIP ] && echo "$(cat CUSTOM_setIP)" | sed 's/.[0-9]\{1,3\}$/.255/' > CUSTOM_setMASK
+        egrep '^# setCONFIG:' .config | sed 's/# setCONFIG://' > CUSTOM_setCONFIG
+        [ -s CUSTOM_setCONFIG ] && echo "CUSTOM_setCONFIG=$(cat CUSTOM_setCONFIG)" >> $GITHUB_ENV
+
+        echo "当前配置: $(cat CUSTOM_setCONFIG)"
+        echo "自定义IP: $(cat CUSTOM_setIP)"
+        grep -n 'lan) ipad=${ipaddr:-"192.168.[0-9]\{1,3\}.[0-9]\{1,3\}"} ;;' package/base-files/files/bin/config_generate
+        grep -n 'default "192.168.[0-9]\{1,3\}.' package/base-files/image-config.in
+        grep -n '/lib/preinit/00_preinit.conf' package/base-files/Makefile | egrep "PREINIT_IP|PREINIT_BROADCAST"
+
+        [ -s CUSTOM_setIP ] && sed -i 's/lan) ipad=${ipaddr:-"192.168.[0-9]\{1,3\}.[0-9]\{1,3\}"} ;;/lan) ipad=${ipaddr:-"'"$(cat CUSTOM_setIP)"'"} ;;/g' package/base-files/files/bin/config_generate
+        [ -s CUSTOM_setIP ] && sed -i 's/default "192.168.[0-9]\{1,3\}.1/default "'"$(cat CUSTOM_setIP)"'/g' package/base-files/image-config.in
+        [ -s CUSTOM_setIP ] && sed -i 's/default "192.168.[0-9]\{1,3\}.255/default "'"$(cat CUSTOM_setMASK)"'/g' package/base-files/image-config.in
+        [ -s CUSTOM_setIP ] && sed -i "s#_IP),\"192.168.[0-9]\{1,3\}.1\")' >>\$(1)/lib/preinit/00_preinit.conf#_IP),\"$(cat CUSTOM_setIP)\")' >>\$(1)/lib/preinit/00_preinit.conf#g" package/base-files/Makefile
+        [ -s CUSTOM_setIP ] && sed -i "s#_BROADCAST),\"192.168.[0-9]\{1,3\}.255\")' >>\$(1)/lib/preinit/00_preinit.conf#_BROADCAST),\"$(cat CUSTOM_setMASK)\")' >>\$(1)/lib/preinit/00_preinit.conf#g" package/base-files/Makefile
+
+        grep -n 'lan) ipad=${ipaddr:-"192.168.[0-9]\{1,3\}.[0-9]\{1,3\}"} ;;' package/base-files/files/bin/config_generate
+        grep -n 'default "192.168.[0-9]\{1,3\}.' package/base-files/image-config.in
+        grep -n '/lib/preinit/00_preinit.conf' package/base-files/Makefile | egrep "PREINIT_IP|PREINIT_BROADCAST"
+
+    - name: SSH连接
       uses: P3TERX/ssh2actions@v1.0.0
       if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
       env:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
-    - name: Download package
+    - name: 下载软件包
       id: package
       run: |
         cd x-wrt
@@ -108,7 +132,7 @@ jobs:
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
-    - name: Compile the firmware
+    - name: 编译固件
       timeout-minutes: 600
       id: compile
       run: |
@@ -120,18 +144,18 @@ jobs:
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
-    - name: Check space usage
+    - name: 检查使用空间
       if: (!cancelled())
       run: df -hT
 
-    - name: Upload bin directory
+    - name: 上传到bin目录
       uses: actions/upload-artifact@main
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
         name: X-wrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: x-wrt/bin
 
-    - name: Organize files
+    - name: 组织文件
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
@@ -140,11 +164,11 @@ jobs:
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
 
-    - name: Upload firmware directory
+    - name: 上传到固件目录
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: X-wrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        name: X-wrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}_${{ env.CUSTOM_useTAG }}()_${{ env.CUSTOM_setCONFIG }}_${{ env.CUSTOM_setIP }}_admin(admin)_root(admin)
         path: ${{ env.FIRMWARE }}
 
     - name: Generate release tag

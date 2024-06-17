@@ -19,7 +19,7 @@ on:
   workflow_dispatch:
     inputs:
       ssh:
-        description: '连接SSH'
+        description: '启用SSH连接'
         required: false
         default: 'false'
 
@@ -38,7 +38,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 600
+    timeout-minutes: 800
 
     steps:
     - name: Checkout
@@ -163,7 +163,7 @@ jobs:
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}_${{ env.CUSTOM_setCONFIG }}_${{ env.CUSTOM_setIP }}_root()_root()
+        name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}_SNAPSHOT()_${{ env.CUSTOM_setCONFIG }}_${{ env.CUSTOM_setIP }}_root()_root()
         path: ${{ env.FIRMWARE }}
 
     - name: Generate release tag
