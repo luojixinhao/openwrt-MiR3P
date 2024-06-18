@@ -101,11 +101,12 @@ jobs:
         [ -s CUSTOM_setCONFIG ] && echo "CUSTOM_setCONFIG=$(cat CUSTOM_setCONFIG)" >> $GITHUB_ENV
 
         echo "当前配置: $(cat CUSTOM_setCONFIG)"
-        echo "自定义IP: $(cat CUSTOM_setIP)"
+        echo "自定义IP: $(cat CUSTOM_setIP) / $(cat CUSTOM_setMASK)"
         grep -n 'lan) ipad=${ipaddr:-"192.168.[0-9]\{1,3\}.[0-9]\{1,3\}"} ;;' package/base-files/files/bin/config_generate
         grep -n 'default "192.168.[0-9]\{1,3\}.' package/base-files/image-config.in
         grep -n '/lib/preinit/00_preinit.conf' package/base-files/Makefile | egrep "PREINIT_IP|PREINIT_BROADCAST"
 
+        echo "修改IP后："
         [ -s CUSTOM_setIP ] && sed -i 's/lan) ipad=${ipaddr:-"192.168.[0-9]\{1,3\}.[0-9]\{1,3\}"} ;;/lan) ipad=${ipaddr:-"'"$(cat CUSTOM_setIP)"'"} ;;/g' package/base-files/files/bin/config_generate
         [ -s CUSTOM_setIP ] && sed -i 's/default "192.168.[0-9]\{1,3\}.1/default "'"$(cat CUSTOM_setIP)"'/g' package/base-files/image-config.in
         [ -s CUSTOM_setIP ] && sed -i 's/default "192.168.[0-9]\{1,3\}.255/default "'"$(cat CUSTOM_setMASK)"'/g' package/base-files/image-config.in
