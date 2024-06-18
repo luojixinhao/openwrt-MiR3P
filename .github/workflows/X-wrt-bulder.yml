@@ -169,7 +169,7 @@ jobs:
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: X-wrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}_${{ env.CUSTOM_useTAG }}()_${{ env.CUSTOM_setCONFIG }}_${{ env.CUSTOM_setIP }}_admin(admin)_root(admin)
+        name: X-wrt${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}_${{ env.CUSTOM_useTAG }}()_${{ env.CUSTOM_setCONFIG }}_${{ env.CUSTOM_setIP }}_admin(admin)_root(admin)
         path: ${{ env.FIRMWARE }}
 
     - name: Generate release tag
