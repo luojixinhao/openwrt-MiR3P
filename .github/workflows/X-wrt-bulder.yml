@@ -67,9 +67,24 @@ jobs:
         git clone $REPO_URL -b $REPO_BRANCH x-wrt
         ln -sf /workdir/x-wrt $GITHUB_WORKSPACE/x-wrt
         cd x-wrt
-        git checkout -f $(git describe --tags $(git rev-list --tags --max-count=1))
 
-        echo "CUSTOM_useTAG=$(git rev-list --tags --max-count=1)" >> $GITHUB_ENV
+        egrep '^# setTAG:' .config | sed 's/# setTAG://' > CUSTOM_setTAG
+        if [ -s CUSTOM_setTAG ]; then
+          if [ "$(cat CUSTOM_setTAG)" = "last" ]; then
+            echo $(git describe --tags $(git rev-list --tags --max-count=1)) > CUSTOM_setTAG
+          fi
+          if [ -z "$(cat CUSTOM_setTAG)" ]; then
+            echo "SNAPSHOT" > CUSTOM_setTAG
+          else
+            git checkout -f $(cat CUSTOM_setTAG)
+          fi
+          
+        else
+          echo "SNAPSHOT" > CUSTOM_setTAG
+        fi
+
+        echo "当前TAG: $(cat CUSTOM_setTAG)"
+        echo "CUSTOM_useTAG=$(cat CUSTOM_setTAG)" >> $GITHUB_ENV
 
     - name: 加载自定义源
       run: |

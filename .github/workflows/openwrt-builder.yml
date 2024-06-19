@@ -65,6 +65,25 @@ jobs:
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        cd openwrt
+
+        egrep '^# setTAG:' .config | sed 's/# setTAG://' > CUSTOM_setTAG
+        if [ -s CUSTOM_setTAG ]; then
+          if [ "$(cat CUSTOM_setTAG)" = "last" ]; then
+            echo $(git describe --tags $(git rev-list --tags --max-count=1)) > CUSTOM_setTAG
+          fi
+          if [ -z "$(cat CUSTOM_setTAG)" ]; then
+            echo "SNAPSHOT" > CUSTOM_setTAG
+          else
+            git checkout -f $(cat CUSTOM_setTAG)
+          fi
+          
+        else
+          echo "SNAPSHOT" > CUSTOM_setTAG
+        fi
+
+        echo "当前TAG: $(cat CUSTOM_setTAG)"
+        echo "CUSTOM_useTAG=$(cat CUSTOM_setTAG)" >> $GITHUB_ENV
 
     - name: 加载自定义源
       run: |
@@ -164,7 +183,7 @@ jobs:
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: OpenWrt${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}_SNAPSHOT()_${{ env.CUSTOM_setCONFIG }}_${{ env.CUSTOM_setIP }}_root()_root()
+        name: OpenWrt${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}_${{ env.CUSTOM_useTAG }}()_${{ env.CUSTOM_setCONFIG }}_${{ env.CUSTOM_setIP }}_root()_root()
         path: ${{ env.FIRMWARE }}
 
     - name: Generate release tag
