@@ -65,6 +65,8 @@ jobs:
         df -hT $PWD
         git clone -b $REPO_BRANCH --single-branch --filter=blob:none $REPO_URL immortalwrt
         ln -sf /workdir/immortalwrt $GITHUB_WORKSPACE/immortalwrt
+
+        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE immortalwrt/.config
         cd immortalwrt
 
         egrep '^# setTAG:' .config | sed 's/# setTAG://' > CUSTOM_setTAG

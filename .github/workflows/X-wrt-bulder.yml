@@ -66,6 +66,8 @@ jobs:
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH x-wrt
         ln -sf /workdir/x-wrt $GITHUB_WORKSPACE/x-wrt
+
+        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE x-wrt/.config
         cd x-wrt
 
         egrep '^# setTAG:' .config | sed 's/# setTAG://' > CUSTOM_setTAG
