@@ -18,7 +18,3 @@
 
 # Modify hostname
 #sed -i 's/OpenWrt/P3TERX-Router/g' package/base-files/files/bin/config_generate
-
-mkdir package/libs/pcre
-wget https://github.com/x-wrt/packages/blob/master/libs/pcre/Config.in -P package/libs/pcre
-wget https://github.com/x-wrt/packages/blob/master/libs/pcre/Makefile -P package/libs/pcre

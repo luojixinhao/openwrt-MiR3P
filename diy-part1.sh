@@ -20,3 +20,15 @@
 # echo 'src-git app-passwall2 https://github.com/xiaorouji/openwrt-passwall2' >>feeds.conf.default
 # echo 'src-git app-adguardhome https://github.com/rufengsuixing/luci-app-adguardhome' >>feeds.conf.default
 # echo 'src-git app-mosdns https://github.com/sbwml/luci-app-mosdns' >>feeds.conf.default
+
+
+
+
+# https://openwrt.org/zh/docs/guide-developer/feeds
+# https://www.cnblogs.com/NueXini/p/16521481.html
+mkdir -p lx-feed/libpcre
+wget https://github.com/x-wrt/packages/blob/master/libs/pcre/Config.in -P lx-feed/libpcre
+wget https://github.com/x-wrt/packages/blob/master/libs/pcre/Makefile -P lx-feed/libpcre
+echo 'src-link my-libpcre lx-feed/' >>feeds.conf.default
+./scripts/feeds update my-libpcre
+./scripts/feeds install -a -p my-libpcre
