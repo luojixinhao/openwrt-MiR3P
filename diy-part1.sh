@@ -26,9 +26,10 @@
 
 # https://openwrt.org/zh/docs/guide-developer/feeds
 # https://www.cnblogs.com/NueXini/p/16521481.html
-mkdir -p lx-feed/libpcre
-wget https://github.com/x-wrt/packages/blob/master/libs/pcre/Config.in -P lx-feed/libpcre
-wget https://github.com/x-wrt/packages/blob/master/libs/pcre/Makefile -P lx-feed/libpcre
-echo 'src-link libpcre lx-feed/' >>feeds.conf.default
-./scripts/feeds update libpcre
-./scripts/feeds install -a -p libpcre
+
+# mkdir -p lx-feed/libpcre
+# wget https://github.com/x-wrt/packages/blob/master/libs/pcre/Config.in -P lx-feed/libpcre
+# wget https://github.com/x-wrt/packages/blob/master/libs/pcre/Makefile -P lx-feed/libpcre
+# echo 'src-link libpcre lx-feed/' >>feeds.conf.default
+# ./scripts/feeds update libpcre
+# ./scripts/feeds install -a -p libpcre
