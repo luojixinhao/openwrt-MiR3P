@@ -34,7 +34,7 @@ env:
   CONFIG_FILE: .config
   DIY_P1_SH: diy-part1.sh
   DIY_P2_SH: diy-part2.sh
-  CACHE_TOOLCHAIN: true
+  CACHE_TOOLCHAIN: false
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: false
@@ -118,9 +118,11 @@ jobs:
       run: |
         df -hT $PWD
         git clone -b $REPO_BRANCH --single-branch --filter=blob:none $REPO_URL immortalwrt
-
+        ls -al
+        ls -al immortalwrt
         cp $CONFIG_FILE immortalwrt/.config
         cd immortalwrt
+        ls -al
         echo "OPENWRT_PATH=$PWD" >> $GITHUB_ENV
         SOURCE_REPO="$(echo $REPO_URL | awk -F '/' '{print $(NF)}')"
         echo "SOURCE_REPO=$SOURCE_REPO" >> $GITHUB_ENV
@@ -130,6 +132,8 @@ jobs:
         DEVICE_SUBTARGET=$(cat .config | grep CONFIG_TARGET_SUBTARGET | awk -F '"' '{print $2}')
         echo "DEVICE_SUBTARGET=$DEVICE_SUBTARGET" >> $GITHUB_ENV
         echo "DEVICE_SUBTARGET=$DEVICE_SUBTARGET" >> $GITHUB_OUTPUT
+        echo "当前TARGET: $DEVICE_TARGET"
+        echo "当前SUBTARGET: $DEVICE_SUBTARGET"
 
         egrep '^# setTAG:' .config | sed 's/# setTAG://' > CUSTOM_setTAG
         if [ -s CUSTOM_setTAG ]; then
@@ -177,6 +181,8 @@ jobs:
         [ -e files ] && mv files immortalwrt/files
         chmod +x $DIY_P2_SH
         ls -al
+        ls -al immortalwrt
+        cp $CONFIG_FILE immortalwrt/.config
         cd immortalwrt
         ls -al
         head .config
