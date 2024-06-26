@@ -34,6 +34,7 @@ env:
   CONFIG_FILE: .config
   DIY_P1_SH: diy-part1.sh
   DIY_P2_SH: diy-part2.sh
+  CACHE_TOOLCHAIN: true
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: false
@@ -64,22 +65,22 @@ jobs:
       uses: hugoalh/disk-space-optimizer-ghaction@v0.8.1
       with:
         operate_sudo: "True"
-        general_include: ".+"
+        general_include: "False.+"
         general_exclude: |-
           ^GCC$
           ^G\+\+$
           Clang
           LLVM
-        docker_include: ".+"
-        docker_prune: "True"
-        docker_clean: "True"
-        apt_prune: "True"
-        apt_clean: "True"
-        homebrew_prune: "True"
-        homebrew_clean: "True"
-        npm_prune: "True"
-        npm_clean: "True"
-        os_swap: "True"
+        docker_include: "False.+"
+        docker_prune: "False"
+        docker_clean: "False"
+        apt_prune: "False"
+        apt_clean: "False"
+        homebrew_prune: "False"
+        homebrew_clean: "False"
+        npm_prune: "False"
+        npm_clean: "False"
+        os_swap: "False"
 
     - name: 释放磁盘空间
       uses: easimon/maximize-build-space@master
@@ -122,6 +123,15 @@ jobs:
 
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE immortalwrt/.config
         cd immortalwrt
+        echo "OPENWRT_PATH=$PWD" >> $GITHUB_ENV
+        SOURCE_REPO="$(echo $REPO_URL | awk -F '/' '{print $(NF)}')"
+        echo "SOURCE_REPO=$SOURCE_REPO" >> $GITHUB_ENV
+        DEVICE_TARGET=$(cat .config | grep CONFIG_TARGET_BOARD | awk -F '"' '{print $2}')
+        echo "DEVICE_TARGET=$DEVICE_TARGET" >> $GITHUB_ENV
+        echo "DEVICE_TARGET=$DEVICE_TARGET" >> $GITHUB_OUTPUT
+        DEVICE_SUBTARGET=$(cat .config | grep CONFIG_TARGET_SUBTARGET | awk -F '"' '{print $2}')
+        echo "DEVICE_SUBTARGET=$DEVICE_SUBTARGET" >> $GITHUB_ENV
+        echo "DEVICE_SUBTARGET=$DEVICE_SUBTARGET" >> $GITHUB_OUTPUT
 
         egrep '^# setTAG:' .config | sed 's/# setTAG://' > CUSTOM_setTAG
         if [ -s CUSTOM_setTAG ]; then
@@ -140,6 +150,14 @@ jobs:
 
         echo "当前TAG: $(cat CUSTOM_setTAG)"
         echo "CUSTOM_useTAG=$(cat CUSTOM_setTAG)" >> $GITHUB_ENV
+
+      - name: 缓存工具链
+      if: env.CACHE_TOOLCHAIN == 'true'
+      uses: HiGarfield/cachewrtbuild@main
+      with:
+        ccache: false
+        mixkey: ${{ env.SOURCE_REPO }}-${{ env.REPO_BRANCH }}-${{ env.DEVICE_TARGET }}-${{ env.DEVICE_SUBTARGET }}
+        prefix: ${{ env.OPENWRT_PATH }}
 
     - name: 加载自定义源
       run: |
