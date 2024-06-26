@@ -177,7 +177,9 @@ jobs:
         [ -e files ] && mv files immortalwrt/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE immortalwrt/.config
         chmod +x $DIY_P2_SH
+        ls -al
         cd immortalwrt
+        ls -al
         $GITHUB_WORKSPACE/$DIY_P2_SH
 
         egrep '^# setIP:192\.168\.[0-9]{1,3}\.[0-9]{1,3}' .config | sed 's/# setIP://' > CUSTOM_setIP
