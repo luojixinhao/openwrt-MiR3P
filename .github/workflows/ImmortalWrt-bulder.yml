@@ -42,7 +42,7 @@ jobs:
     timeout-minutes: 800
     
     steps:
-      - name: 服务器信息
+    - name: 服务器信息
       run: |
         echo "警告⚠"
         echo "分配的服务器性能有限，若选择的插件过多，务必注意CPU性能！"
