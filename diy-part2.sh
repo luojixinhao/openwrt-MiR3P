@@ -23,4 +23,10 @@
 git clone --depth=1 https://github.com/kongfl888/luci-app-adguardhome package/luci-app-adguardhome
 # MosDNS
 git clone --depth=1 https://github.com/sbwml/luci-app-mosdns package/luci-app-mosdns
-
+# Wrtbwmon
+git clone --depth=1 https://github.com/brvphoenix/wrtbwmon package/wrtbwmon
+git clone --depth=1 https://github.com/brvphoenix/luci-app-wrtbwmon package/luci-app-wrtbwmon
+# chinadns-ng
+#git clone --depth=1 https://github.com/zfl9/chinadns-ng package/chinadns-ng
+# Passwall
+git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
