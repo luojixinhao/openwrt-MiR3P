@@ -19,7 +19,12 @@
 # Modify hostname
 #sed -i 's/OpenWrt/P3TERX-Router/g' package/base-files/files/bin/config_generate
 
+# AdGuardHome
+git clone --depth=1 https://github.com/kongfl888/luci-app-adguardhome package/luci-app-adguardhome
+# MosDNS
+git clone --depth=1 https://github.com/sbwml/luci-app-mosdns package/luci-app-mosdns
 
+# 个性化配置
 egrep '^# setIP:192\.168\.[0-9]{1,3}\.[0-9]{1,3}' .config | sed 's/# setIP://' > CUSTOM_setIP
 [ -s CUSTOM_setIP ] && echo "CUSTOM_setIP=$(cat CUSTOM_setIP)" >> $GITHUB_ENV
 [ -s CUSTOM_setIP ] && echo "$(cat CUSTOM_setIP)" | sed 's/.[0-9]\{1,3\}$/.255/' > CUSTOM_setMASK

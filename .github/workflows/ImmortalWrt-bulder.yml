@@ -11,6 +11,9 @@
 #
 # 参考：https://docs.github.com/zh/actions/using-workflows/workflow-syntax-for-github-actions
 # 磁盘不足参考：https://github.com/coolsnowwolf/lede/issues/11665
+# 相关：
+#      https://github.com/haiibo/OpenWrt
+#      https://github.com/rrtft/ActionsBuildOpenWRT
 #
 
 name: 编译ImmortalWrt
@@ -44,7 +47,7 @@ jobs:
     steps:
     - name: 服务器信息
       run: |
-        echo "警告⚠"
+        echo "注意⚠"
         echo "分配的服务器性能有限，若选择的插件过多，务必注意CPU性能！"
         echo -e "已知CPU型号(降序): 7763，8370C，8272CL，8171M，E5-2673\n"
         echo "--------------------------CPU信息--------------------------"
@@ -56,7 +59,6 @@ jobs:
         echo -e "$(sudo lshw -short -C memory | grep GiB)\n"
         echo "--------------------------硬盘信息--------------------------"
         echo "硬盘数量: $(ls /dev/sd* | grep -v [1-9] | wc -l)" && df -hT
-        df -hT
 
     - name: 优化磁盘空间
       uses: hugoalh/disk-space-optimizer-ghaction@v0.8.1
@@ -90,11 +92,7 @@ jobs:
         remove-codeql: 'true'
         remove-docker-images: 'true'
 
-    - name: 整理磁盘空间完成
-      run: |
-        df -hT
-
-    - name: Checkout
+    - name: 检出
       uses: actions/checkout@main
 
     - name: 初始化环境
@@ -181,6 +179,10 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
+
+    - name: 磁盘空间
+      run: |
+        df -hT
 
     - name: 编译固件
       timeout-minutes: 600
