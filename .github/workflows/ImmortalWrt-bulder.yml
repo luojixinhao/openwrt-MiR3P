@@ -151,7 +151,7 @@ jobs:
         echo "当前TAG: $(cat CUSTOM_setTAG)"
         echo "CUSTOM_useTAG=$(cat CUSTOM_setTAG)" >> $GITHUB_ENV
 
-      - name: 缓存工具链
+    - name: 缓存工具链
       if: env.CACHE_TOOLCHAIN == 'true'
       uses: HiGarfield/cachewrtbuild@main
       with:
