@@ -96,7 +96,6 @@ jobs:
 
         sudo -E systemctl daemon-reload
 
-        sudo timedatectl set-timezone "$TZ"
         sudo chown $USER:$GROUPS $GITHUB_WORKSPACE
 
     - name: 检出本仓库
@@ -130,6 +129,7 @@ jobs:
         DEVICE_SUBTARGET=$(cat .config | grep CONFIG_TARGET_SUBTARGET | awk -F '"' '{print $2}')
         DEVICE_NAME=$(grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/')
 
+        sudo timedatectl set-timezone "$CUSTOM_setTimeZone"
         BULD_STARTTIME=$(date +"%Y%m%d%H%M")
 
         git clone -b $CUSTOM_setRepoBRANCH --single-branch --filter=blob:none $CUSTOM_setRepoURL wrtdir
@@ -278,6 +278,7 @@ jobs:
 
     - name: 磁盘空间
       run: |
+        pwd
         df -hT
         ls -al $WRT_PATH/
 
@@ -301,6 +302,7 @@ jobs:
     - name: 磁盘使用空间
       if: (!cancelled())
       run: |
+        pwd
         df -hT
         ls -al $WRT_PATH/
 
