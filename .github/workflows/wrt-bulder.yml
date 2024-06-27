@@ -258,6 +258,8 @@ jobs:
         check: 0
       run: |
         [ -e files ] && mv files $WRT_PATH/files
+        mkdir -p $WRT_PATH/files/etc/uci-defaults
+        cp diy-init.sh $WRT_PATH/files/etc/uci-defaults/99-init-settings
         cp .config $WRT_PATH/.config
         chmod +x diy-part2.sh
         cd $WRT_PATH
@@ -292,8 +294,6 @@ jobs:
       run: |
         cd $WRT_PATH
         head -n 7 .config
-        mkdir -p files/etc/uci-defaults
-        cp $GITHUB_WORKSPACE/diy-init.sh files/etc/uci-defaults/99-init-settings
 
         echo -e "$(nproc) thread compile"
         make -j$(nproc) || make -j1 || make -j1 V=s
@@ -322,7 +322,8 @@ jobs:
       run: |
         cd $WRT_PATH/bin/targets/*/*
         cat sha256sums
-        cp $WRT_PATH/.config build.config
+        cp $WRT_PATH/.config build.conf
+        cp $GITHUB_WORKSPACE/.config custom.conf
         mv -f $WRT_PATH/bin/packages/*/*/*.ipk packages
         tar -zcf packages.tar.gz packages
         rm -rf packages
