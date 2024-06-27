@@ -124,7 +124,7 @@ jobs:
         CUSTOM_setUploadBin=$(egrep '^# setUploadBin:' .config | sed 's/# setUploadBin:\s*//')
         CUSTOM_setUploadFirmware=$(egrep '^# setUploadFirmware:' .config | sed 's/# setUploadFirmware:\s*//')
         CUSTOM_setUploadRelease=$(egrep '^# setUploadRelease:' .config | sed 's/# setUploadRelease:\s*//')
-        CUSTOM_setRepoName="$(echo $CUSTOM_SETREPOURL | awk -F '/' '{print $(NF)}') | awk -F '.' '{print $1}'"
+        CUSTOM_setRepoName=$(echo $CUSTOM_setRepoURL | awk -F '/' '{print $(NF)}' | awk -F '.' '{print $1}')
         DEVICE_TARGET=$(cat .config | grep CONFIG_TARGET_BOARD | awk -F '"' '{print $2}')
         DEVICE_SUBTARGET=$(cat .config | grep CONFIG_TARGET_SUBTARGET | awk -F '"' '{print $2}')
         DEVICE_NAME=$(grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/')
@@ -254,10 +254,10 @@ jobs:
         check: 0
       run: |
         [ -e files ] && mv files $WRT_PATH/files
-        cp $GITHUB_WORKSPACE/.config $WRT_PATH/.config
+        cp .config $WRT_PATH/.config
+        chmod +x diy-part2.sh
         cd $WRT_PATH
         head -n 60 .config
-        chmod +x diy-part2.sh
         $GITHUB_WORKSPACE/diy-part2.sh
 
     - name: SSH连接
