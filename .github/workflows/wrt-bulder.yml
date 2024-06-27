@@ -147,6 +147,7 @@ jobs:
         echo "总提交数："
         git rev-list --count --all
         git rev-list --count HEAD .
+        ./scripts/getver.sh
 
         echo "当前目录（$PWD）磁盘空间："
         df -hT $PWD
@@ -159,6 +160,7 @@ jobs:
 
         Git_rCount=$(git rev-list --count --all)
         Git_vHash=$(git log --format='%H' -1 | cut -c1-10)
+        Git_reVersion=$(./scripts/getver.sh)
 
         COMMIT_AUTHOR=$(git show -s --date=short --format="作者: %an")
         COMMIT_DATE=$(git show -s --date=short --format="时间: %ci")
@@ -173,6 +175,7 @@ jobs:
         echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
         echo "Git_rCount=$Git_rCount" >> $GITHUB_ENV
         echo "Git_vHash=$Git_vHash" >> $GITHUB_ENV
+        echo "Git_reVersion=$Git_reVersion" >> $GITHUB_ENV
         echo "CUSTOM_setRepoName=$CUSTOM_setRepoName" >> $GITHUB_ENV
         echo "DEVICE_TARGET=$DEVICE_TARGET" >> $GITHUB_ENV
         echo "DEVICE_SUBTARGET=$DEVICE_SUBTARGET" >> $GITHUB_ENV
@@ -196,6 +199,7 @@ jobs:
         echo "COMMIT_HASH：$COMMIT_HASH"
         echo "Git_rCount：$Git_rCount"
         echo "Git_vHash：$Git_vHash"
+        echo "Git_reVersion：$Git_reVersion"
         echo "DEVICE_TARGET：$DEVICE_TARGET"
         echo "DEVICE_SUBTARGET：$DEVICE_SUBTARGET"
         echo "DEVICE_NAME：$DEVICE_NAME"
@@ -310,7 +314,7 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.CUSTOM_setUploadBin == 'true'
       uses: actions/upload-artifact@main
       with:
-        name: bin_${{ env.CUSTOM_setRepoName }}_${{ env.DEVICE_NAME }}_${{ env.BULD_STARTTIME }}_${{ env.CUSTOM_setCONFIG }}_${{ env.CUSTOM_setTAG }}(r${{ env.Git_rCount }}-${{ env.Git_vHash }})_${{ env.CUSTOM_setIP }}_${{ env.CUSTOM_setUserPasswd }}
+        name: bin_${{ env.CUSTOM_setRepoName }}_${{ env.DEVICE_NAME }}_${{ env.BULD_STARTTIME }}_${{ env.CUSTOM_setCONFIG }}_${{ env.CUSTOM_setTAG }}(${{ env.Git_reVersion }})_${{ env.CUSTOM_setIP }}_${{ env.CUSTOM_setUserPasswd }}
         path: ${{ env.WRT_PATH }}/bin
 
     - name: 组织文件
@@ -328,14 +332,14 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.CUSTOM_setUploadFirmware == 'true' && !cancelled()
       uses: actions/upload-artifact@main
       with:
-        name: ${{ env.CUSTOM_setRepoName }}_${{ env.DEVICE_NAME }}_${{ env.BULD_STARTTIME }}_${{ env.CUSTOM_setCONFIG }}_${{ env.CUSTOM_setTAG }}(r${{ env.Git_rCount }}-${{ env.Git_vHash }})_${{ env.CUSTOM_setIP }}_${{ env.CUSTOM_setUserPasswd }}
+        name: ${{ env.CUSTOM_setRepoName }}_${{ env.DEVICE_NAME }}_${{ env.BULD_STARTTIME }}_${{ env.CUSTOM_setCONFIG }}_${{ env.CUSTOM_setTAG }}(${{ env.Git_reVersion }})_${{ env.CUSTOM_setIP }}_${{ env.CUSTOM_setUserPasswd }}
         path: ${{ env.FIRMWARE_PATH }}
 
     - name: 发布固件
       if: steps.compile.outputs.status == 'success' && env.CUSTOM_setUploadRelease == 'true' && !cancelled()
       uses: ncipollo/release-action@main
       with:
-        name: ${{ env.CUSTOM_setRepoName }}_${{ env.DEVICE_NAME }}_${{ env.BULD_STARTTIME }}_${{ env.CUSTOM_setCONFIG }}_${{ env.CUSTOM_setTAG }}(r${{ env.Git_rCount }}-${{ env.Git_vHash }})
+        name: ${{ env.CUSTOM_setRepoName }}_${{ env.DEVICE_NAME }}_${{ env.BULD_STARTTIME }}_${{ env.CUSTOM_setCONFIG }}_${{ env.CUSTOM_setTAG }}(${{ env.Git_reVersion }})
         allowUpdates: true
         tag: ${{ env.CUSTOM_setRepoName }}_${{ env.CUSTOM_setCONFIG }}
         token: ${{ secrets.GITHUB_TOKEN }}
