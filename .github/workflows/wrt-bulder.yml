@@ -274,11 +274,19 @@ jobs:
         $GITHUB_WORKSPACE/diy-part2.sh
 
     - name: SSH连接
-      uses: P3TERX/ssh2actions@main
       if: github.event.inputs.ssh == 'true' || contains(github.event.action, 'ssh')
+      uses: P3TERX/ssh2actions@main
+      timeout-minutes: 600
       env:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+
+    - name: SSH连接2
+      if: github.event.inputs.ssh == 'true2'
+      uses: mxschmitt/action-tmate@master
+      timeout-minutes: 600
+      with:
+        sudo: false
 
     - name: 下载软件包
       id: package
@@ -336,6 +344,7 @@ jobs:
         rm -rf packages
         echo "FIRMWARE_PATH=$PWD" >> $GITHUB_ENV
         echo "FIRMWARE_PATH=$PWD"
+        ls -al 
         ls -al $WRT_PATH/bin
 
     - name: 上传固件到手工下载
