@@ -26,6 +26,10 @@ on:
         description: '启用SSH连接(设置为：true)'
         required: false
         default: 'false'
+      conf:
+        description: '配置文件'
+        required: true
+        default: '.config'
 
 jobs:
   build:
@@ -104,30 +108,31 @@ jobs:
     - name: 创建变量及克隆源代码
       working-directory: ./
       run: |
-        CUSTOM_setIP=$(egrep '^# setIP:' .config | sed 's/# setIP:\s*//')
+        CONFIG_FILE=${{ github.event.inputs.conf }}
+        CUSTOM_setIP=$(egrep '^# setIP:' $CONFIG_FILE | sed 's/# setIP:\s*//')
         [ -z $CUSTOM_setIP ] && CUSTOM_setIP=192.168.1.1
-        CUSTOM_setMASK=$(egrep '^# setMASK:' .config | sed 's/# setMASK:\s*//')
+        CUSTOM_setMASK=$(egrep '^# setMASK:' $CONFIG_FILE | sed 's/# setMASK:\s*//')
         [ -z $CUSTOM_setMASK ] && CUSTOM_setMASK=$(echo $CUSTOM_setIP | sed 's/.[0-9]\{1,3\}$/.255/')
         [ -z $CUSTOM_setMASK ] && CUSTOM_setMASK=192.168.1.255
-        CUSTOM_setCONFIG=$(egrep '^# setCONFIG:' .config | sed 's/# setCONFIG:\s*//')
+        CUSTOM_setCONFIG=$(egrep '^# setCONFIG:' $CONFIG_FILE | sed 's/# setCONFIG:\s*//')
         [ -z $CUSTOM_setCONFIG ] && CUSTOM_setCONFIG=wrt-v0.conf
-        CUSTOM_setRepoURL=$(egrep '^# setRepoURL:' .config | sed 's/# setRepoURL:\s*//')
+        CUSTOM_setRepoURL=$(egrep '^# setRepoURL:' $CONFIG_FILE | sed 's/# setRepoURL:\s*//')
         [ -z $CUSTOM_setRepoURL ] && CUSTOM_setRepoURL=https://github.com/openwrt/openwrt
-        CUSTOM_setRepoBRANCH=$(egrep '^# setRepoBRANCH:' .config | sed 's/# setRepoBRANCH:\s*//')
+        CUSTOM_setRepoBRANCH=$(egrep '^# setRepoBRANCH:' $CONFIG_FILE | sed 's/# setRepoBRANCH:\s*//')
         [ -z $CUSTOM_setRepoBRANCH ] && CUSTOM_setRepoBRANCH=master
-        CUSTOM_setTAG=$(egrep '^# setTAG:' .config | sed 's/# setTAG:\s*//')
+        CUSTOM_setTAG=$(egrep '^# setTAG:' $CONFIG_FILE | sed 's/# setTAG:\s*//')
         [ -z $CUSTOM_setTAG ] && CUSTOM_setTAG=SNAPSHOT
-        CUSTOM_setUserPasswd=$(egrep '^# setUserPasswd:' .config | sed 's/# setUserPasswd:\s*//')
+        CUSTOM_setUserPasswd=$(egrep '^# setUserPasswd:' $CONFIG_FILE | sed 's/# setUserPasswd:\s*//')
         [ -z $CUSTOM_setUserPasswd ] && CUSTOM_setUserPasswd="root()root()"
-        CUSTOM_setTimeZone=$(egrep '^# setTimeZone:' .config | sed 's/# setTimeZone:\s*//')
-        CUSTOM_setCacheToolchain=$(egrep '^# setCacheToolchain:' .config | sed 's/# setCacheToolchain:\s*//')
-        CUSTOM_setUploadBin=$(egrep '^# setUploadBin:' .config | sed 's/# setUploadBin:\s*//')
-        CUSTOM_setUploadFirmware=$(egrep '^# setUploadFirmware:' .config | sed 's/# setUploadFirmware:\s*//')
-        CUSTOM_setUploadRelease=$(egrep '^# setUploadRelease:' .config | sed 's/# setUploadRelease:\s*//')
+        CUSTOM_setTimeZone=$(egrep '^# setTimeZone:' $CONFIG_FILE | sed 's/# setTimeZone:\s*//')
+        CUSTOM_setCacheToolchain=$(egrep '^# setCacheToolchain:' $CONFIG_FILE | sed 's/# setCacheToolchain:\s*//')
+        CUSTOM_setUploadBin=$(egrep '^# setUploadBin:' $CONFIG_FILE | sed 's/# setUploadBin:\s*//')
+        CUSTOM_setUploadFirmware=$(egrep '^# setUploadFirmware:' $CONFIG_FILE | sed 's/# setUploadFirmware:\s*//')
+        CUSTOM_setUploadRelease=$(egrep '^# setUploadRelease:' $CONFIG_FILE | sed 's/# setUploadRelease:\s*//')
         CUSTOM_setRepoName=$(echo $CUSTOM_setRepoURL | awk -F '/' '{print $(NF)}' | awk -F '.' '{print $1}')
-        DEVICE_TARGET=$(cat .config | grep CONFIG_TARGET_BOARD | awk -F '"' '{print $2}')
-        DEVICE_SUBTARGET=$(cat .config | grep CONFIG_TARGET_SUBTARGET | awk -F '"' '{print $2}')
-        DEVICE_NAME=$(grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/')
+        DEVICE_TARGET=$(cat $CONFIG_FILE | grep CONFIG_TARGET_BOARD | awk -F '"' '{print $2}')
+        DEVICE_SUBTARGET=$(cat $CONFIG_FILE | grep CONFIG_TARGET_SUBTARGET | awk -F '"' '{print $2}')
+        DEVICE_NAME=$(grep '^CONFIG_TARGET.*DEVICE.*=y' $CONFIG_FILE | sed -r 's/.*DEVICE_(.*)=y/\1/')
 
         sudo timedatectl set-timezone "$CUSTOM_setTimeZone"
         BULD_STARTTIME=$(date +"%Y%m%d%H%M")
@@ -152,7 +157,7 @@ jobs:
         echo "当前目录（$PWD）磁盘空间："
         df -hT $PWD
         echo "配置文件(本->源)："
-        cp ../.config .config
+        cp ../$CONFIG_FILE .config
         echo "本仓目录："
         ls -al ../
         echo "源仓目录："
@@ -168,6 +173,7 @@ jobs:
         COMMIT_HASH=$(git show -s --date=short --format="Hash: %H")
 
         echo "BULD_STARTTIME=$BULD_STARTTIME" >> $GITHUB_ENV
+        echo "CONFIG_FILE=$CONFIG_FILE" >> $GITHUB_ENV
         echo "WRT_PATH=$PWD" >> $GITHUB_ENV
         echo "COMMIT_AUTHOR=$COMMIT_AUTHOR" >> $GITHUB_ENV
         echo "COMMIT_DATE=$COMMIT_DATE" >> $GITHUB_ENV
@@ -192,6 +198,7 @@ jobs:
         echo "CUSTOM_setUploadRelease=$CUSTOM_setUploadRelease" >> $GITHUB_ENV
 
         echo "BULD_STARTTIME：$BULD_STARTTIME"
+        echo "CONFIG_FILE：$CONFIG_FILE"
         echo "WRT_PATH：$PWD"
         echo "COMMIT_AUTHOR：$COMMIT_AUTHOR"
         echo "COMMIT_DATE：$COMMIT_DATE"
@@ -260,7 +267,7 @@ jobs:
         [ -e files ] && mv files $WRT_PATH/files
         mkdir -p $WRT_PATH/files/etc/uci-defaults
         cp diy-init.sh $WRT_PATH/files/etc/uci-defaults/99-init-settings
-        cp .config $WRT_PATH/.config
+        cp ${{ env.CONFIG_FILE }} $WRT_PATH/.config
         chmod +x diy-part2.sh
         cd $WRT_PATH
         head -n 60 .config
@@ -268,7 +275,7 @@ jobs:
 
     - name: SSH连接
       uses: P3TERX/ssh2actions@main
-      if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
+      if: github.event.inputs.ssh == 'true' || contains(github.event.action, 'ssh')
       env:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -323,11 +330,13 @@ jobs:
         cd $WRT_PATH/bin/targets/*/*
         cat sha256sums
         cp $WRT_PATH/.config build.conf
-        cp $GITHUB_WORKSPACE/.config custom.conf
+        cp $GITHUB_WORKSPACE/${{ env.CONFIG_FILE }} custom.conf
         mv -f $WRT_PATH/bin/packages/*/*/*.ipk packages
         tar -zcf packages.tar.gz packages
         rm -rf packages
         echo "FIRMWARE_PATH=$PWD" >> $GITHUB_ENV
+        echo "FIRMWARE_PATH=$PWD"
+        ls -al $WRT_PATH/bin
 
     - name: 上传固件到手工下载
       if: steps.compile.outputs.status == 'success' && env.CUSTOM_setUploadFirmware == 'true' && !cancelled()
