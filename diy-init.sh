@@ -11,11 +11,21 @@ uci commit luci
 # uci set fstab.@global[0].check_fs=1
 # uci commit fstab
 
+mkdir /mnt/sda1
+mkdir /mnt/sda2
 mkdir -p /_LXusb/5T
 grep -qw LXusb /etc/passwd || echo "LXusb:*:1000:1000:USB User:/_LXusb:/bin/false" >> /etc/passwd
 grep -qw LXusb /etc/group || echo "LXusb:x:1000:USB User" >> /etc/group
 
 rm /usr/bin/wget
 ln -s /usr/libexec/wget-ssl /usr/bin/wget
+
+/etc/init.d/nlbwmon enable
+
+cp /etc/config/wrtbwmon.user /etc/
+
+mv /usr/bin/AdGuardHome /usr/bin/AdGuardHome_t
+mkdir /usr/bin/AdGuardHome/
+mv /usr/bin/AdGuardHome_t /usr/bin/AdGuardHome/AdGuardHome
 
 exit 0
