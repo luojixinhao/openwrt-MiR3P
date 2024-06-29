@@ -19,6 +19,16 @@
 # Modify hostname
 #sed -i 's/OpenWrt/P3TERX-Router/g' package/base-files/files/bin/config_generate
 
+# Git稀疏克隆，只克隆指定目录到本地
+function git_sparse_clone() {
+	branch="$1" repourl="$2" && shift 2
+	git clone --depth=1 -b $branch --single-branch --filter=blob:none --sparse $repourl
+	repodir=$(echo $repourl | awk -F '/' '{print $(NF)}')
+	cd $repodir && git sparse-checkout set $@
+	mv -f $@ ../package
+	cd .. && rm -rf $repodir
+}
+
 # AdGuardHome
 git clone --depth=1 https://github.com/kongfl888/luci-app-adguardhome package/luci-app-adguardhome
 # MosDNS
@@ -30,3 +40,6 @@ git clone --depth=1 https://github.com/brvphoenix/luci-app-wrtbwmon package/luci
 #git clone --depth=1 https://github.com/zfl9/chinadns-ng package/chinadns-ng
 # Passwall
 git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
+
+git_sparse_clone 24.04_b202406141121 https://github.com/x-wrt/packages lang/ruby
+
