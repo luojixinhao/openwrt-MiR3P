@@ -30,7 +30,8 @@ function git_sparse_clone() {
 }
 
 # AdGuardHome
-git clone --depth=1 https://github.com/kongfl888/luci-app-adguardhome package/luci-app-adguardhome
+#git clone --depth=1 https://github.com/kongfl888/luci-app-adguardhome package/luci-app-adguardhome
+git_sparse_clone main https://github.com/sirpdboy/sirpdboy-package luci-app-adguardhome
 # MosDNS
 git clone --depth=1 https://github.com/sbwml/luci-app-mosdns package/luci-app-mosdns
 # Wrtbwmon
@@ -41,6 +42,7 @@ git clone --depth=1 https://github.com/brvphoenix/luci-app-wrtbwmon package/luci
 # Passwall
 git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
 # 
+ls -al package/feeds/packages/ruby
 rm -rf package/feeds/packages/ruby
 git_sparse_clone 24.04_b202406141121 https://github.com/x-wrt/packages lang/ruby
 # 
