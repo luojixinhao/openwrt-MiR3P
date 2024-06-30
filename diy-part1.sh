@@ -21,7 +21,7 @@
 # echo 'src-git app-adguardhome https://github.com/rufengsuixing/luci-app-adguardhome' >>feeds.conf.default
 # echo 'src-git app-mosdns https://github.com/sbwml/luci-app-mosdns' >>feeds.conf.default
 
-echo "src-git cups https://github.com/sirpdboy/luci-app-netdata" >> feeds.conf.default
+#echo "src-git netdata https://github.com/sirpdboy/luci-app-netdata" >> feeds.conf.default
 
 # https://openwrt.org/zh/docs/guide-developer/feeds
 # https://www.cnblogs.com/NueXini/p/16521481.html

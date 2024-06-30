@@ -50,6 +50,9 @@ git_sparse_clone master https://github.com/x-wrt/packages libs/pcre
 # 
 ls -al feeds/luci/applications/luci-app-netdata
 rm -rf feeds/luci/applications/luci-app-netdata
-git_sparse_clone main https://github.com/sirpdboy/sirpdboy-package luci-app-netdata
+#git_sparse_clone main https://github.com/sirpdboy/sirpdboy-package luci-app-netdata
+git clone https://github.com/sirpdboy/luci-app-netdata package/luci-app-netdata
+# 
+git_sparse_clone main https://github.com/sirpdboy/sirpdboy-package luci-app-pptpserver
 # 
 git clone --depth=1 https://github.com/sirpdboy/netspeedtest.git package/netspeedtest
