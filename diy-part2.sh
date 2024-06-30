@@ -46,7 +46,8 @@ git_sparse_clone 24.04_b202406141121 https://github.com/x-wrt/packages lang/ruby
 # 
 git_sparse_clone master https://github.com/x-wrt/packages libs/pcre
 # 
-#rm -rf feeds/luci/applications/luci-app-netdata
-#git_sparse_clone main https://github.com/sirpdboy/sirpdboy-package luci-app-netdata
+ls -al feeds/luci/applications/luci-app-netdata
+rm -rf feeds/luci/applications/luci-app-netdata
+git_sparse_clone main https://github.com/sirpdboy/sirpdboy-package luci-app-netdata
 # 
 git clone --depth=1 https://github.com/sirpdboy/netspeedtest.git package/netspeedtest

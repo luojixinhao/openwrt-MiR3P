@@ -254,7 +254,9 @@ jobs:
       run: |
         [ -e feeds.conf.default ] && cp feeds.conf.default $WRT_PATH/feeds.conf.default
         chmod +x diy-part1.sh
+        cd $WRT_PATH
         $GITHUB_WORKSPACE/diy-part1.sh
+        cat feeds.conf.default
 
     - name: 更新源
       run: cd $WRT_PATH && ./scripts/feeds update -a
@@ -304,6 +306,8 @@ jobs:
         pwd
         df -hT
         ls -al $WRT_PATH/
+        ls -al $WRT_PATH/package/
+        ls -al $WRT_PATH/feeds/
 
     - name: 编译固件
       timeout-minutes: 600
