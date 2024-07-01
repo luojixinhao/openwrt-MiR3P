@@ -46,9 +46,9 @@ git clone --depth=1 https://github.com/brvphoenix/luci-app-wrtbwmon package/luci
 git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
 
 # Ruby 3.3.3 编译不了，替换为低版本
-ls -al package/feeds/packages/ruby
-rm -rf package/feeds/packages/ruby
-git_sparse_clone 24.04_b202406141121 https://github.com/x-wrt/packages lang/ruby
+# ls -al package/feeds/packages/ruby
+# rm -rf package/feeds/packages/ruby
+# git_sparse_clone 24.04_b202406141121 https://github.com/x-wrt/packages lang/ruby
 
 # 修复缺少依赖libpcre的警告
 git_sparse_clone master https://github.com/x-wrt/packages libs/pcre
