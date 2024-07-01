@@ -253,9 +253,9 @@ jobs:
     - name: 加载自定义源
       run: |
         [ -e feeds.conf.default ] && cp feeds.conf.default $WRT_PATH/feeds.conf.default
-        chmod +x diy-part1.sh
+        chmod +x ${{ env.CUSTOM_setRepoName }}-diy-part1.sh
         cd $WRT_PATH
-        $GITHUB_WORKSPACE/diy-part1.sh
+        $GITHUB_WORKSPACE/${{ env.CUSTOM_setRepoName }}-diy-part1.sh
         cat feeds.conf.default
 
     - name: 更新源
@@ -270,12 +270,12 @@ jobs:
       run: |
         [ -e files ] && mv files $WRT_PATH/files
         mkdir -p $WRT_PATH/files/etc/uci-defaults
-        cp diy-init.sh $WRT_PATH/files/etc/uci-defaults/99-init-settings
+        cp ${{ env.CUSTOM_setRepoName }}-diy-init.sh $WRT_PATH/files/etc/uci-defaults/99-init-settings
         cp ${{ env.CONFIG_FILE }} $WRT_PATH/.config
-        chmod +x diy-part2.sh
+        chmod +x ${{ env.CUSTOM_setRepoName }}-diy-part2.sh
         cd $WRT_PATH
         head -n 60 .config
-        $GITHUB_WORKSPACE/diy-part2.sh
+        $GITHUB_WORKSPACE/${{ env.CUSTOM_setRepoName }}-diy-part2.sh
 
     - name: SSH连接
       if: github.event.inputs.ssh == 'true' || contains(github.event.action, 'ssh')
