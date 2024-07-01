@@ -54,9 +54,10 @@ git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall-packages packa
 git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
 
 # Ruby 3.3.3 编译不了，替换为低版本
-# ls -al package/feeds/packages/ruby
-# rm -rf package/feeds/packages/ruby
-# git_sparse_clone 24.04_b202406141121 https://github.com/x-wrt/packages lang/ruby
+ls -al package/feeds/packages/ruby
+rm -rf package/feeds/packages/ruby
+#git_sparse_clone 24.04_b202406141121 https://github.com/x-wrt/packages lang/ruby
+git_sparse_clone openwrt-23.05 https://github.com/openwrt/packages lang/ruby
 
 # 修复缺少依赖libpcre的警告
 git_sparse_clone master https://github.com/x-wrt/packages libs/pcre
@@ -69,7 +70,7 @@ rm -rf feeds/luci/applications/luci-app-netdata
 git clone --depth=1 https://github.com/Jason6111/luci-app-netdata package/luci-app-netdata
 
 # PPTP
-git_sparse_clone main https://github.com/sirpdboy/sirpdboy-package luci-app-pptpserver
+#git_sparse_clone main https://github.com/sirpdboy/sirpdboy-package luci-app-pptpserver
 
 # 很多功能不能用
 #git clone --depth=1 https://github.com/sirpdboy/netspeedtest.git package/netspeedtest
@@ -80,6 +81,10 @@ git clone --depth=1 https://github.com/jerrykuku/luci-app-argon-config package/l
 
 # 磁盘管理
 git_sparse_clone master https://github.com/immortalwrt/luci applications/luci-app-diskman
+sed -i 's@../../luci.mk@$(TOPDIR)/feeds/luci/luci.mk@' package/luci-app-diskman/Makefile
+cat package/luci-app-diskman/Makefile | grep luci.mk
 
 # Syncthing
 git_sparse_clone master https://github.com/immortalwrt/luci applications/luci-app-syncthing
+sed -i 's@../../luci.mk@$(TOPDIR)/feeds/luci/luci.mk@' package/luci-app-syncthing/Makefile
+cat package/luci-app-syncthing/Makefile | grep luci.mk
