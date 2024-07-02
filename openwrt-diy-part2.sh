@@ -53,6 +53,11 @@ git_sparse_clone master https://github.com/vernesong/OpenClash luci-app-openclas
 git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall-packages package/openwrt-passwall
 git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
 
+# ERROR: package/feeds/packages/shadowsocks-libev failed to build.
+ls -al package/feeds/packages/shadowsocks-libev
+rm -rf package/feeds/packages/shadowsocks-libev
+git_sparse_clone master https://github.com/kenzok8/small shadowsocksr-libev
+
 # Ruby 3.3.3 编译不了，替换为低版本
 ls -al package/feeds/packages/ruby
 rm -rf package/feeds/packages/ruby
