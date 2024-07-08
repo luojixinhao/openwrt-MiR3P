@@ -2,6 +2,7 @@
 
 # Set default theme to luci-theme-argon
 uci set luci.main.mediaurlbase='/luci-static/argon'
+uci set luci.sauth.sessiontime=36001
 uci commit luci
 
 # Disable IPV6 ula prefix

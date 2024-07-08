@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# Set default theme to luci-theme-argon
+# 主题相关设置
 uci set luci.main.mediaurlbase='/luci-static/argon'
+uci set luci.sauth.sessiontime=36001
 uci commit luci
 
 # Disable IPV6 ula prefix
