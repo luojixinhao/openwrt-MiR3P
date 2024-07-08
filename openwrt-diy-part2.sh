@@ -55,14 +55,14 @@ git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall package/luci-a
 
 # ERROR: package/feeds/packages/shadowsocks-libev failed to build.
 ls -al package/feeds/packages/shadowsocks-libev
-rm -rf package/feeds/packages/shadowsocks-libev
-git_sparse_clone master https://github.com/kenzok8/small shadowsocksr-libev
+#rm -rf package/feeds/packages/shadowsocks-libev
+#git_sparse_clone master https://github.com/kenzok8/small shadowsocksr-libev
 
 # Ruby 3.3.3 编译不了，替换为低版本
 ls -al package/feeds/packages/ruby
-rm -rf package/feeds/packages/ruby
+#rm -rf package/feeds/packages/ruby
 #git_sparse_clone 24.04_b202406141121 https://github.com/x-wrt/packages lang/ruby
-git_sparse_clone openwrt-23.05 https://github.com/openwrt/packages lang/ruby
+#git_sparse_clone openwrt-23.05 https://github.com/openwrt/packages lang/ruby
 
 # 修复缺少依赖libpcre的警告
 git_sparse_clone master https://github.com/x-wrt/packages libs/pcre
