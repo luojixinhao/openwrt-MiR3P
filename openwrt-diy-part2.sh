@@ -33,6 +33,7 @@ function git_sparse_clone() {
 #git clone --depth=1 https://github.com/kongfl888/luci-app-adguardhome package/luci-app-adguardhome
 git_sparse_clone main https://github.com/sirpdboy/sirpdboy-package luci-app-adguardhome
 # AdGuardHome Core
+mkdir -p files/usr/bin/AdGuardHome
 adguardhome_Cloud_Version="$(curl -sL https://api.github.com/repos/AdguardTeam/AdGuardHome/releases/latest 2>/dev/null | grep 'tag_name' | egrep -o "v[0-9].+[0-9.]" | awk 'NR==1')"
 wget -qO- https://github.com/AdguardTeam/AdGuardHome/releases/download/${adguardhome_Cloud_Version}/AdGuardHome_linux_mipsle_softfloat.tar.gz | tar xOvz > files/usr/bin/AdGuardHome/AdGuardHome
 chmod +x files/usr/bin/AdGuardHome/AdGuardHome
