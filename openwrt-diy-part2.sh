@@ -35,8 +35,8 @@ git_sparse_clone main https://github.com/sirpdboy/sirpdboy-package luci-app-adgu
 # AdGuardHome Core
 mkdir -p files/usr/bin
 adguardhome_Cloud_Version="$(curl -sL https://api.github.com/repos/AdguardTeam/AdGuardHome/releases/latest 2>/dev/null | grep 'tag_name' | egrep -o "v[0-9].+[0-9.]" | awk 'NR==1')"
-wget -qO- https://github.com/AdguardTeam/AdGuardHome/releases/download/${adguardhome_Cloud_Version}/AdGuardHome_linux_mipsle_softfloat.tar.gz | tar xOvz > files/usr/bin/AdGuardHome
-chmod +x files/usr/bin/AdGuardHome
+wget -qO- https://github.com/AdguardTeam/AdGuardHome/releases/download/${adguardhome_Cloud_Version}/AdGuardHome_linux_mipsle_softfloat.tar.gz | tar xOvz > files/usr/bin/AdGuardHome_new
+chmod +x files/usr/bin/AdGuardHome_new
 ls -al files/usr/bin
 
 # MosDNS

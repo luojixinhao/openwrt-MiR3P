@@ -32,5 +32,8 @@ if [ -f /usr/bin/AdGuardHome ]; then
 	mkdir /usr/bin/AdGuardHome/
 	mv /usr/bin/AdGuardHome_t /usr/bin/AdGuardHome/AdGuardHome
 fi
+if [ -f /usr/bin/AdGuardHome_new ]; then
+	mv /usr/bin/AdGuardHome_new /usr/bin/AdGuardHome/AdGuardHome
+fi
 
 exit 0
