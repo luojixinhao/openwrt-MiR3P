@@ -18,15 +18,19 @@ mkdir -p /_LXusb/5T
 grep -qw LXusb /etc/passwd || echo "LXusb:*:1000:1000:USB User:/_LXusb:/bin/false" >> /etc/passwd
 grep -qw LXusb /etc/group || echo "LXusb:x:1000:USB User" >> /etc/group
 
-rm /usr/bin/wget
-ln -s /usr/libexec/wget-ssl /usr/bin/wget
+if [ -f /usr/libexec/wget-ssl ]; then
+	rm /usr/bin/wget
+	ln -s /usr/libexec/wget-ssl /usr/bin/wget
+fi
 
 /etc/init.d/nlbwmon enable
 
 cp /etc/config/wrtbwmon.user /etc/
 
-mv /usr/bin/AdGuardHome /usr/bin/AdGuardHome_t
-mkdir /usr/bin/AdGuardHome/
-mv /usr/bin/AdGuardHome_t /usr/bin/AdGuardHome/AdGuardHome
+if [ -f /usr/bin/AdGuardHome ]; then
+	mv /usr/bin/AdGuardHome /usr/bin/AdGuardHome_t
+	mkdir /usr/bin/AdGuardHome/
+	mv /usr/bin/AdGuardHome_t /usr/bin/AdGuardHome/AdGuardHome
+fi
 
 exit 0
