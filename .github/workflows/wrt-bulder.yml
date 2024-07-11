@@ -290,7 +290,8 @@ jobs:
       uses: mxschmitt/action-tmate@master
       timeout-minutes: 600
       with:
-        sudo: false
+        sudo: true
+        limit-access-to-actor: false
 
     - name: 下载软件包
       id: package
@@ -402,3 +403,12 @@ jobs:
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: 失败SSH
+      if: ${{ failure() }}
+      uses: mxschmitt/action-tmate@master
+      timeout-minutes: 600
+      with:
+        sudo: true
+        limit-access-to-actor: false
+
