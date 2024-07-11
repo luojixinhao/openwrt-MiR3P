@@ -332,8 +332,8 @@ jobs:
         ls -al $WRT_PATH/
         ls -al $WRT_PATH/bin/
         ls -al $WRT_PATH/bin/targets/*/*
+        ls -al $WRT_PATH/build_dir/
         ls -al $WRT_PATH/build_dir/target-mipsel_24kc_musl/
-        ls -al $WRT_PATH/build_dir/target-mipsel_24kc_musl/*/*
 
     - name: 上传整个bin目录
       if: steps.compile.outputs.status == 'success' && env.CUSTOM_setUploadBin == 'true'
