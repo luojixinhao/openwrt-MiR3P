@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 主题相关设置
-uci set luci.main.mediaurlbase='/luci-static/argon'
+[ -d /usr/lib/lua/luci/view/themes/argon ] && uci set luci.main.mediaurlbase='/luci-static/argon'
 uci set luci.sauth.sessiontime=36001
 uci commit luci
 
@@ -23,9 +23,9 @@ if [ -f /usr/libexec/wget-ssl ]; then
 	ln -s /usr/libexec/wget-ssl /usr/bin/wget
 fi
 
-/etc/init.d/nlbwmon enable
+[ -f /etc/init.d/nlbwmon ] && /etc/init.d/nlbwmon enable
 
-cp /etc/config/wrtbwmon.user /etc/
+[ -f /etc/config/wrtbwmon.user ] && cp /etc/config/wrtbwmon.user /etc/
 
 if [ -f /usr/bin/AdGuardHome ]; then
 	mv /usr/bin/AdGuardHome /usr/bin/AdGuardHome_t
