@@ -1,0 +1,35 @@
+name: Test
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: A job to run test in DragonflyBSD
+    env:
+      MYTOKEN : ${{ secrets.MYTOKEN }}
+      MYTOKEN2: "value2"
+    steps:
+    - uses: actions/checkout@v4
+    - name: Test in DragonflyBSD
+      id: test
+      uses: vmactions/dragonflybsd-vm@v1
+      with:
+        envs: 'MYTOKEN MYTOKEN2'
+        usesh: true
+        prepare: |
+          pkg install -y socat
+
+        run: |
+          if [ -n "test" ]; then
+            echo "false"
+          fi
+          if [ "test" ]; then
+            echo "test"
+          fi
+          pwd
+          ls -lah
+          whoami
+          env
+          uname -a
+          echo "OK"
