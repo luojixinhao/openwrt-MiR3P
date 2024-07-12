@@ -140,7 +140,6 @@ jobs:
         git clone -b $CUSTOM_setRepoBRANCH --single-branch --filter=blob:none $CUSTOM_setRepoURL wrtdir
         cd wrtdir
         git fetch origin
-        git fetch origin --tags
         if [ "$CUSTOM_setTAG" = "last" ]; then
           CUSTOM_setTAG=$(git describe --tags $(git rev-list --tags --max-count=1))
         fi
