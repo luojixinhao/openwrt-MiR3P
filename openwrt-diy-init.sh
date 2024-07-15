@@ -24,6 +24,7 @@ if [ -f /usr/libexec/wget-ssl ]; then
 fi
 
 [ -f /etc/init.d/nlbwmon ] && /etc/init.d/nlbwmon enable
+[ -f /etc/init.d/blockd ] && /etc/init.d/blockd disable
 
 [ -f /etc/config/wrtbwmon.user ] && cp /etc/config/wrtbwmon.user /etc/
 
