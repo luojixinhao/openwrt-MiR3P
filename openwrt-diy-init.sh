@@ -2,7 +2,7 @@
 
 # 主题相关设置
 [ -d /usr/lib/lua/luci/view/themes/argon ] && uci set luci.main.mediaurlbase='/luci-static/argon'
-uci set luci.sauth.sessiontime=36001
+uci set luci.sauth.sessiontime=86400
 uci commit luci
 
 # Disable IPV6 ula prefix
