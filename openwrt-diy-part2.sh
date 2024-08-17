@@ -99,3 +99,6 @@ cat package/luci-app-diskman/Makefile | grep luci.mk
 git_sparse_clone master https://github.com/immortalwrt/luci applications/luci-app-syncthing
 sed -i 's@../../luci.mk@$(TOPDIR)/feeds/luci/luci.mk@' package/luci-app-syncthing/Makefile
 cat package/luci-app-syncthing/Makefile | grep luci.mk
+
+# dockerman
+git clone --depth=1 https://github.com/lisaac/luci-app-dockerman package/luci-app-dockerman
