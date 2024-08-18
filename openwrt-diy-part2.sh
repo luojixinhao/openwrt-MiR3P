@@ -101,4 +101,4 @@ sed -i 's@../../luci.mk@$(TOPDIR)/feeds/luci/luci.mk@' package/luci-app-syncthin
 cat package/luci-app-syncthing/Makefile | grep luci.mk
 
 # dockerman
-git clone --depth=1 https://github.com/lisaac/luci-app-dockerman package/luci-app-dockerman
+#git clone --depth=1 https://github.com/lisaac/luci-app-dockerman package/luci-app-dockerman
