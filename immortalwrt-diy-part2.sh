@@ -87,5 +87,5 @@ git clone --depth=1 https://github.com/Jason6111/luci-app-netdata package/luci-a
 #git clone --depth=1 https://github.com/sirpdboy/netspeedtest.git package/netspeedtest
 
 # dockerman
-#git clone --depth=1 https://github.com/lisaac/luci-app-dockerman package/luci-app-dockerman
+git clone --depth=1 https://github.com/lisaac/luci-app-dockerman package/luci-app-dockerman
 
