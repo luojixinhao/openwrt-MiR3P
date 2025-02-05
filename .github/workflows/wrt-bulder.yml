@@ -356,7 +356,8 @@ jobs:
         cat sha256sums
         cp $WRT_PATH/.config build.conf
         cp $GITHUB_WORKSPACE/${{ env.CONFIG_FILE }} custom.conf
-        mv -f $WRT_PATH/bin/packages/*/*/*.ipk packages
+        #mv -f $WRT_PATH/bin/packages/*/*/*.ipk packages
+        mv -f $WRT_PATH/bin/packages/*/*/*.apk packages
         tar -zcf packages.tar.gz packages
         rm -rf packages
         echo "FIRMWARE_PATH=$PWD" >> $GITHUB_ENV
